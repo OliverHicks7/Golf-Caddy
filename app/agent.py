@@ -1,18 +1,25 @@
 from app.schemas import HoleInput, RecommendationResponse
+from app.tools import get_player_profile
 
 
 def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
     """
     Generate a basic golf strategy recommendation.
 
-    This is a simple rule-based version for the MVP.
-    Later, this function will become the place where we call tools,
-    player memory, weather APIs, and eventually an LLM.
+    This version uses a simple player profile tool.
+    Later, this function will call more tools such as weather,
+    course data, shot history, and an AI model.
     """
+
+    player_profile = get_player_profile()
 
     recommendation = "Play a conservative tee shot."
     reasoning_parts = []
     confidence = "medium"
+
+    common_miss = player_profile["common_miss"]
+    driver_distance = player_profile["driver_distance"]
+    current_focus = player_profile["current_focus"]
 
     if hole.par == 3:
         recommendation = "Choose the club that gives you a comfortable full swing to the centre of the green."
@@ -22,9 +29,9 @@ def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
 
     elif hole.par == 4:
         if hole.yardage >= 400:
-            recommendation = "Consider driver if the fairway is forgiving, but avoid forcing extra distance."
+            recommendation = "Consider driver only if there is enough room for your usual miss."
             reasoning_parts.append(
-                "This is a longer par 4, so distance matters, but keeping the ball in play is still the priority."
+                f"This is a longer par 4. Your driver distance is around {driver_distance} yards, so driver may help, but only if the miss pattern is manageable."
             )
         else:
             recommendation = "Consider a controlled tee shot with a fairway wood, hybrid, or long iron."
@@ -44,6 +51,11 @@ def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
             "The fairway is narrow, so accuracy is more valuable than distance."
         )
 
+    if common_miss == "left":
+        reasoning_parts.append(
+            "Your current common miss is left, so avoid aiming too close to trouble on the left side."
+        )
+
     if hole.hazards:
         reasoning_parts.append(f"Important hazards to consider: {hole.hazards}.")
 
@@ -54,6 +66,8 @@ def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
 
     if hole.notes:
         reasoning_parts.append(f"Additional notes: {hole.notes}.")
+
+    reasoning_parts.append(f"Your current improvement focus is: {current_focus}.")
 
     reasoning = " ".join(reasoning_parts)
 

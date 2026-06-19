@@ -8,6 +8,7 @@ from app.schemas import (
     HoleInput,
     RecommendationResponse,
     PlayerProfileCreate,
+    PlayerProfileUpdate,
     PlayerProfileResponse,
 )
 
@@ -67,6 +68,34 @@ def get_player_profile():
                 status_code=404,
                 detail="No player profile found. Use POST /player-profile to create one.",
             )
+
+        return player_profile
+
+    finally:
+        db.close()
+
+@app.put("/player-profile", response_model=PlayerProfileResponse)
+def update_player_profile(profile: PlayerProfileUpdate):
+    db = SessionLocal()
+
+    try:
+        player_profile = db.query(PlayerProfile).first()
+
+        if player_profile is None:
+            raise HTTPException(
+                status_code=404,
+                detail="No player profile found. Use POST /player-profile to create one.",
+            )
+
+        player_profile.name = profile.name
+        player_profile.handicap = profile.handicap
+        player_profile.driver_distance = profile.driver_distance
+        player_profile.seven_iron_distance = profile.seven_iron_distance
+        player_profile.common_miss = profile.common_miss
+        player_profile.current_focus = profile.current_focus
+
+        db.commit()
+        db.refresh(player_profile)
 
         return player_profile
 

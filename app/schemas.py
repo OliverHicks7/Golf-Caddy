@@ -20,8 +20,8 @@ class RecommendationResponse(BaseModel):
     reasoning: str
     confidence: str
 
-class PlayerProfileResponse(BaseModel):
-    id: int
+
+class PlayerProfileCreate(BaseModel):
     name: str
     handicap: int
     driver_distance: int
@@ -30,7 +30,8 @@ class PlayerProfileResponse(BaseModel):
     current_focus: str
 
 
-class PlayerProfileUpdate(BaseModel):
+class PlayerProfileResponse(BaseModel):
+    id: int
     name: str
     handicap: int
     driver_distance: int

@@ -19,3 +19,33 @@ class RecommendationResponse(BaseModel):
     recommendation: str
     reasoning: str
     confidence: str
+
+
+class PlayerProfileCreate(BaseModel):
+    name: str
+    handicap: int
+    driver_distance: int
+    seven_iron_distance: int
+    common_miss: str
+    current_focus: str
+
+class PlayerProfileUpdate(BaseModel):
+    name: str
+    handicap: int
+    driver_distance: int
+    seven_iron_distance: int
+    common_miss: str
+    current_focus: str
+
+
+class PlayerProfileResponse(BaseModel):
+    id: int
+    name: str
+    handicap: int
+    driver_distance: int
+    seven_iron_distance: int
+    common_miss: str
+    current_focus: str
+
+class PlayerProfileDeleteResponse(BaseModel):
+    message: str

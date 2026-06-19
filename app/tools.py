@@ -6,8 +6,8 @@ def get_player_profile():
     """
     Return the player's profile from the database.
 
-    If no profile exists yet, create a default one.
-    Later, we can add endpoints to update this properly.
+    This tool should only read existing memory.
+    It should not create a default profile automatically.
     """
 
     db = SessionLocal()
@@ -16,18 +16,7 @@ def get_player_profile():
         player_profile = db.query(PlayerProfile).first()
 
         if player_profile is None:
-            player_profile = PlayerProfile(
-                name="Oliver Hicks",
-                handicap=20,
-                driver_distance=200,
-                seven_iron_distance=125,
-                common_miss="left",
-                current_focus="controlled tempo and keeping the ball in play",
-            )
-
-            db.add(player_profile)
-            db.commit()
-            db.refresh(player_profile)
+            return None
 
         return {
             "name": player_profile.name,

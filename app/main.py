@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 
+from app import models
 from app.agent import generate_recommendation
+from app.database import engine
 from app.schemas import HoleInput, RecommendationResponse
 
+
+models.Base.metadata.create_all(bind=engine)
 
 app=FastAPI()
 

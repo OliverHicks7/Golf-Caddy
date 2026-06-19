@@ -46,3 +46,6 @@ class PlayerProfileResponse(BaseModel):
     seven_iron_distance: int
     common_miss: str
     current_focus: str
+
+class PlayerProfileDeleteResponse(BaseModel):
+    message: str

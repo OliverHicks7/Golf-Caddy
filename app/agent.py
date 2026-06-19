@@ -1,17 +1,20 @@
 from app.schemas import HoleInput, RecommendationResponse
-from app.tools import get_player_profile
+from app.tools import get_player_profile, get_weather_conditions
 
 
 def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
     """
     Generate a basic golf strategy recommendation.
 
-    This version uses a simple player profile tool.
-    Later, this function will call more tools such as weather,
-    course data, shot history, and an AI model.
+    This version uses two tools:
+    - player profile
+    - weather conditions
+
+    Later, this function will call real APIs, player memory, and an AI model.
     """
 
     player_profile = get_player_profile()
+    weather = get_weather_conditions(hole.course_name)
 
     recommendation = "Play a conservative tee shot."
     reasoning_parts = []
@@ -20,6 +23,10 @@ def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
     common_miss = player_profile["common_miss"]
     driver_distance = player_profile["driver_distance"]
     current_focus = player_profile["current_focus"]
+
+    wind_speed = weather["wind_speed_mph"]
+    wind_direction = weather["wind_direction"]
+    conditions = weather["conditions"]
 
     if hole.par == 3:
         recommendation = "Choose the club that gives you a comfortable full swing to the centre of the green."
@@ -54,6 +61,21 @@ def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
     if common_miss == "left":
         reasoning_parts.append(
             "Your current common miss is left, so avoid aiming too close to trouble on the left side."
+        )
+
+    if wind_speed >= 15:
+        reasoning_parts.append(
+            f"The wind is significant at around {wind_speed} mph, so club selection and shot shape need extra caution."
+        )
+
+    if wind_direction == "left_to_right":
+        reasoning_parts.append(
+            "The wind is moving left to right, which may exaggerate shots that start or curve that way."
+        )
+
+    if conditions == "dry":
+        reasoning_parts.append(
+            "Dry conditions may allow more rollout, so a shorter club from the tee may still leave a manageable approach."
         )
 
     if hole.hazards:

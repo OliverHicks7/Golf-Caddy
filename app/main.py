@@ -10,6 +10,7 @@ from app.schemas import (
     PlayerProfileCreate,
     PlayerProfileUpdate,
     PlayerProfileResponse,
+    PlayerProfileDeleteResponse,
 )
 
 
@@ -98,6 +99,27 @@ def update_player_profile(profile: PlayerProfileUpdate):
         db.refresh(player_profile)
 
         return player_profile
+
+    finally:
+        db.close()
+
+@app.delete("/player-profile", response_model=PlayerProfileDeleteResponse)
+def delete_player_profile():
+    db = SessionLocal()
+
+    try:
+        player_profile = db.query(PlayerProfile).first()
+
+        if player_profile is None:
+            raise HTTPException(
+                status_code=404,
+                detail="No player profile found to delete.",
+            )
+
+        db.delete(player_profile)
+        db.commit()
+
+        return {"message": "Player profile deleted successfully."}
 
     finally:
         db.close()

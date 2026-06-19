@@ -14,6 +14,13 @@ def generate_recommendation(hole: HoleInput) -> RecommendationResponse:
     """
 
     player_profile = get_player_profile()
+    if player_profile is None:
+        return RecommendationResponse(
+            recommendation="Create a player profile before requesting a recommendation.",
+            reasoning="The caddie needs your handicap, distances, common miss, and current focus before it can give useful personalised advice.",
+            confidence="low",
+        )
+
     weather = get_weather_conditions(hole.course_name)
 
     recommendation = "Play a conservative tee shot."

@@ -55,6 +55,24 @@ def create_player_profile(profile: PlayerProfileCreate):
     finally:
         db.close()
 
+@app.get("/player-profile", response_model=PlayerProfileResponse)
+def get_player_profile():
+    db = SessionLocal()
+
+    try:
+        player_profile = db.query(PlayerProfile).first()
+
+        if player_profile is None:
+            raise HTTPException(
+                status_code=404,
+                detail="No player profile found. Use POST /player-profile to create one.",
+            )
+
+        return player_profile
+
+    finally:
+        db.close()
+
 
 @app.post("/recommendation", response_model=RecommendationResponse)
 def create_recommendation(hole: HoleInput):
